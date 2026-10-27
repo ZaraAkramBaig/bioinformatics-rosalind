@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REVP Restriction Site Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Rosalind REVP · Locating Restriction Sites</span>
+    <h1>Slide a window along the DNA and test each one for a reverse palindrome</h1>
+    <p>Every step comes from <span class="mono">revp.py</span>, running on the Python server. For each start position and each length from 4 to 12, the code cuts out <span class="mono">sub</span> and checks whether <span class="mono">sub == reverse_complement(sub)</span>. Restriction enzymes cut DNA at sequences like this. For example, EcoRI cuts at <span class="mono">GAATTC</span>.</p>
+  </header>
+
+  <form class="panel inputs" id="form" autocomplete="off">
+    <div class="field">
+      <label for="preset">Example</label>
+      <select id="preset">
+        <option value=">Rosalind_24&#10;TCAATGCATGCGGGTCTATATGCAT">Rosalind sample · 25 bp</option>
+        <option value=">enzyme_sites&#10;CCGAATTCAAAGCTTGGATCCTT">EcoRI, HindIII, BamHI sites · 23 bp</option>
+        <option value=">no_sites&#10;AAAACCCCAAAACCCC">No palindromes · 16 bp</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="dataset">Dataset (FASTA)</label>
+      <textarea id="dataset" rows="2" spellcheck="false">>Rosalind_24
+TCAATGCATGCGGGTCTATATGCAT</textarea>
+    </div>
+    <button type="button" id="random">Random DNA</button>
+    <button type="submit" class="primary">Run</button>
+    <p class="err" id="err" hidden></p>
+  </form>
+
+  <div class="main">
+    <section class="panel" aria-label="Search">
+      <div class="controls">
+        <button type="button" id="bStart" title="Back to start (Home)">⏮</button>
+        <button type="button" id="bPrev" title="Previous window (←)">◀ Back</button>
+        <button type="button" id="bPlay" class="primary" title="Play / pause (Space)">▶ Play</button>
+        <button type="button" id="bNext" title="Next window (→)">Step ▶</button>
+        <button type="button" id="bHit" title="Jump to the next palindrome (N)">Next site ⏩</button>
+        <button type="button" id="bEnd" title="Jump to end (End)">⏭</button>
+        <div class="grow">
+          <input type="range" id="scrub" min="0" max="1" value="0" aria-label="Step">
+          <span class="stepcount" id="stepcount">0 / 0</span>
+        </div>
+        <label class="speed" for="speed">Speed <input type="range" id="speed" min="1" max="10" value="6"></label>
+      </div>
+
+      <h3 class="rowtitle">DNA <span id="where"></span></h3>
+      <div class="gridbox"><div class="strip" id="strip"></div></div>
+
+      <h3 class="rowtitle">Sites found <span>each bar is one (position, length) pair</span></h3>
+      <div class="gridbox"><div class="tracks" id="tracks"></div></div>
+
+      <h3 class="rowtitle">Current window <span>sub on top, its reverse complement below</span></h3>
+      <div class="gridbox"><div id="compare"></div></div>
+      <p class="axisnote">Click a base to jump to the first window that starts there.</p>
+    </section>
+
+    <aside class="side">
+      <section class="panel explain" id="explain" aria-live="polite"></section>
+      <section class="panel explain">
+        <h2>Reverse palindrome</h2>
+        <div class="formula">reverse_complement(s):
+  1. reverse s
+  2. swap A↔T, C↔G
+
+<b>palindrome  ⇔  s == reverse_complement(s)</b>
+
+GAATTC → reverse CTTAAG
+       → complement <b>GAATTC</b> ✓
+
+for i in range(n):          # start
+  for length in 4..12:      # size
+    if i + length &gt; n: break
+    test dna[i : i+length]
+
+O(n · 9 · 12) = <b>O(n)</b> for fixed lengths</div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="panel" aria-label="Output">
+    <div class="align-head">
+      <h2>Program output <span class="muted" id="outcount"></span></h2>
+    </div>
+    <div id="output"></div>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
