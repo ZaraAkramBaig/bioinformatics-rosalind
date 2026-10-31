@@ -1,3 +1,4 @@
+import os
 import sys
 
 COMPLEMENT = {"A": "T", "T": "A", "C": "G", "G": "C"}
@@ -41,7 +42,13 @@ def find_reverse_palindromes(dna, min_len=4, max_len=12):
 
 
 def main():
-    text = sys.stdin.read()
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "input.txt")
+
+    with open(filename, "r") as file:
+        text = file.read()
     dna = read_fasta(text)
 
     for pos, length in find_reverse_palindromes(dna):

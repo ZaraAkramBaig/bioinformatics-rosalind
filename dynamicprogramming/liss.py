@@ -1,3 +1,4 @@
+import os
 import sys
 from bisect import bisect_left
 
@@ -45,7 +46,13 @@ def solve(n, perm):
 
 
 def main():
-    data = sys.stdin.read().split()
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "input.txt")
+
+    with open(filename, "r") as file:
+        data = file.read().split()
     n = int(data[0])
     perm = list(map(int, data[1:1 + n]))
 
